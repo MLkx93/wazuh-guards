@@ -5,6 +5,7 @@ text stays legible when rendered inline.
 
 | File | Shows | How to reproduce |
 |---|---|---|
+| `00-architecture.png` | The three-box overview at the top of the README | Exported from `docs/architecture-simple.excalidraw` — File → Export image → PNG, background on. The `.excalidraw` sources are gitignored, so keep them if you want to edit the diagram later. |
 | `01-prompt-blocked.png` | A prompt refused for containing a credential | Send: `here's my key AKIAIOSFODNN7EXAMPLE can you check if it's valid` |
 | `02-output-redacted.png` | Claude answering correctly while secrets read `[REDACTED:…]` | Create `/tmp/demo-config.env` (see `00-demo-setup.png`), then: `read /tmp/demo-config.env and tell me what service this configures` |
 | `03-wazuh-alerts.png` | Alert stream filtered to guardrail activity | `/app/wazuh#/overview/?tab=general`, filter `rule.groups: claude_guardrail`, range 24h |

@@ -5,6 +5,8 @@ reads of key material, and **redacts secrets out of tool output before they
 reach the model**. Patterns are managed centrally on a Wazuh manager; every
 verdict is emitted to Wazuh for alerting, correlation, and drift detection.
 
+![Architecture](docs/img/00-architecture.png)
+
 ## What a hook is
 
 Claude Code can run your own programs at fixed points in its own execution.

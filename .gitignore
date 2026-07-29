@@ -31,3 +31,6 @@ deploy/docker/single-node/config/wazuh_indexer_ssl_certs/
 
 # Screenshot working folder - originals live in docs/img/
 images/
+
+# Excalidraw sources - kept locally, exported PNG is what ships
+*.excalidraw
