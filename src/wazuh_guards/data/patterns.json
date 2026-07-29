@@ -1,0 +1,114 @@
+{
+  "version": "2026.07.29",
+  "rules": [
+    {
+      "name": "AWS Access Key ID",
+      "severity": "high",
+      "pattern": "\\b(?:AKIA|ASIA|ABIA|ACCA)[0-9A-Z]{16}\\b"
+    },
+    {
+      "name": "AWS Secret Access Key",
+      "severity": "high",
+      "pattern": "(?i)aws.{0,20}?(?:secret|private).{0,20}?[=:\\s]\\s*['\"]?([A-Za-z0-9/+=]{40})['\"]?"
+    },
+    {
+      "name": "Google API Key",
+      "severity": "high",
+      "pattern": "\\bAIza[0-9A-Za-z_\\-]{35}\\b"
+    },
+    {
+      "name": "Azure / GCP Service Account",
+      "severity": "high",
+      "pattern": "\"type\"\\s*:\\s*\"service_account\""
+    },
+    {
+      "name": "Anthropic API Key",
+      "severity": "high",
+      "pattern": "\\bsk-ant-[0-9A-Za-z_\\-]{20,}"
+    },
+    {
+      "name": "OpenAI API Key",
+      "severity": "high",
+      "pattern": "\\bsk-(?!ant-)(?:proj-)?[0-9A-Za-z_\\-]{32,}",
+      "note": "Negative lookahead for 'ant-' so Anthropic keys report under their own rule instead of matching both."
+    },
+    {
+      "name": "GitHub Token",
+      "severity": "high",
+      "pattern": "\\b(?:ghp|gho|ghu|ghs|ghr|github_pat)_[0-9A-Za-z_]{22,}"
+    },
+    {
+      "name": "GitLab Token",
+      "severity": "high",
+      "pattern": "\\bglpat-[0-9A-Za-z_\\-]{20,}"
+    },
+    {
+      "name": "Slack Token",
+      "severity": "high",
+      "pattern": "\\bxox[baprs]-[0-9A-Za-z\\-]{10,}"
+    },
+    {
+      "name": "Stripe Secret Key",
+      "severity": "high",
+      "pattern": "\\b[rs]k_(?:live|test)_[0-9A-Za-z]{20,}"
+    },
+    {
+      "name": "Twilio Account SID",
+      "severity": "high",
+      "pattern": "\\bAC[0-9a-f]{32}\\b"
+    },
+    {
+      "name": "SendGrid API Key",
+      "severity": "high",
+      "pattern": "\\bSG\\.[0-9A-Za-z_\\-]{22}\\.[0-9A-Za-z_\\-]{43}\\b"
+    },
+    {
+      "name": "npm Token",
+      "severity": "high",
+      "pattern": "\\bnpm_[0-9A-Za-z]{36}\\b"
+    },
+    {
+      "name": "PyPI Token",
+      "severity": "high",
+      "pattern": "\\bpypi-AgEIcHlwaS5vcmc[0-9A-Za-z_\\-]{50,}"
+    },
+    {
+      "name": "Hugging Face Token",
+      "severity": "high",
+      "pattern": "\\bhf_[0-9A-Za-z]{34}\\b"
+    },
+    {
+      "name": "Private Key Block",
+      "severity": "high",
+      "pattern": "-----BEGIN\\s+(?:RSA|DSA|EC|OPENSSH|PGP|ENCRYPTED)?\\s*PRIVATE KEY(?:\\s+BLOCK)?-----"
+    },
+    {
+      "name": "JSON Web Token",
+      "severity": "high",
+      "pattern": "\\beyJ[A-Za-z0-9_\\-]{10,}\\.eyJ[A-Za-z0-9_\\-]{10,}\\.[A-Za-z0-9_\\-]{10,}"
+    },
+    {
+      "name": "Database URI with password",
+      "severity": "high",
+      "pattern": "(?i)\\b(?:postgres|postgresql|mysql|mongodb(?:\\+srv)?|redis|amqp|mssql)://[^\\s:@/]+:[^\\s:@/]+@"
+    },
+    {
+      "name": "Generic secret assignment",
+      "severity": "high",
+      "pattern": "(?i)\\b(?:api[_\\-]?key|secret[_\\-]?key|access[_\\-]?token|auth[_\\-]?token|client[_\\-]?secret|password|passwd)\\b\\s*[=:]\\s*['\"]([^'\"\\s]{12,})['\"]"
+    },
+    {
+      "name": "Credit Card Number",
+      "severity": "low",
+      "pattern": "\\b(?:\\d[ \\-]?){13,19}\\b",
+      "validator": "luhn",
+      "note": "Severity is promoted to high by the luhn validator; digit runs that fail the checksum are dropped entirely."
+    },
+    {
+      "name": "US Social Security Number",
+      "severity": "high",
+      "pattern": "\\b(?!000|666|9\\d{2})\\d{3}[-\\s](?!00)\\d{2}[-\\s](?!0000)\\d{4}\\b",
+      "note": "Presidio's UsSsnRecognizer misses '123-45-6789' outright and can mislabel bare SSNs as DATE_TIME, so SSNs are matched here. Excludes SSA-invalid ranges: area 000/666/900-999, group 00, serial 0000."
+    }
+  ]
+}

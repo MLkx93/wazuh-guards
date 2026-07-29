@@ -1,0 +1,58 @@
+[build-system]
+requires = ["setuptools>=68"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "wazuh-guards"
+version = "0.1.0"
+description = "Secret/PII guardrail for Claude Code, with Wazuh-managed patterns and SIEM alerting"
+readme = "README.md"
+requires-python = ">=3.10"
+license = { text = "MIT" }
+authors = [{ name = "Malak FAIZ" }]
+keywords = ["claude-code", "guardrail", "dlp", "presidio", "wazuh", "siem"]
+
+# The hook path deliberately has zero hard dependencies: it must run under a
+# bare interpreter when the daemon is down. Presidio is an extra, not a
+# requirement.
+dependencies = []
+
+[project.optional-dependencies]
+# spaCy's en_core_web_lg is not on PyPI under that name; install.sh reuses the
+# system-wide model via --system-site-packages rather than re-downloading 560MB.
+nlp = [
+  "presidio-analyzer>=2.2",
+  "spacy>=3.7",
+]
+wazuh = [
+  "requests>=2.28",
+]
+dev = [
+  "pytest>=8.0",
+  "pytest-timeout>=2.2",
+]
+
+[project.scripts]
+guardrailctl = "wazuh_guards.cli:main"
+wazuh-guards-daemon = "wazuh_guards.daemon:main"
+
+[tool.setuptools.packages.find]
+where = ["src"]
+
+[tool.setuptools.package-data]
+"wazuh_guards.data" = ["*.json"]
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+pythonpath = ["src", "tests"]
+# Presidio's cold load is ~12s; anything hanging past 120s is a bug, not a
+# slow model.
+timeout = 120
+markers = [
+  "slow: requires the Presidio NLP model (~12s cold load)",
+  "canary: end-to-end redaction proof; must never be skipped in CI",
+]
+filterwarnings = [
+  "ignore::DeprecationWarning:spacy.*",
+  "ignore::DeprecationWarning:presidio_analyzer.*",
+]

@@ -1,0 +1,22 @@
+__pycache__/
+*.py[cod]
+*.egg-info/
+build/
+dist/
+.venv/
+venv/
+.pytest_cache/
+.coverage
+htmlcov/
+
+# Runtime state - never commit verdicts or cached patterns
+*.log
+guardrail.json
+guardrail.json.1
+daemon.pid
+patterns-cache.json
+
+# Local overrides holding manager credentials
+.env
+wazuh.env
+deploy/docker/single-node/config/wazuh_indexer_ssl_certs/
