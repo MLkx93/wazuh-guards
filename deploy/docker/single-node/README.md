@@ -25,6 +25,13 @@ docker compose -f generate-indexer-certs.yml run --rm generator
 docker compose up -d
 ```
 
+The commands below run from that `wazuh-docker/single-node` directory, so they
+refer to this repo through `$GUARDS`. Set it to wherever you cloned it:
+
+```bash
+GUARDS=~/Desktop/wazuh-guards
+```
+
 First start takes several minutes. The API answers on `https://localhost:55000`
 with a self-signed certificate.
 
@@ -38,15 +45,29 @@ deliberately so Wazuh stays the single management plane.
 MANAGER=single-node-wazuh.manager-1     # docker ps to confirm
 
 docker exec "$MANAGER" mkdir -p /var/ossec/etc/shared/guardrail
-docker cp ../../wazuh/patterns.json "$MANAGER":/var/ossec/etc/shared/guardrail/patterns.json
+docker cp "$GUARDS/deploy/wazuh/patterns.json" "$MANAGER":/var/ossec/etc/shared/guardrail/patterns.json
 docker exec "$MANAGER" chown wazuh:wazuh /var/ossec/etc/shared/guardrail/patterns.json
 ```
 
 Confirm the fetch path — **`raw=true` is mandatory**; without it the response
-falls through to `_rcl2json()` and comes back mangled:
+falls through to `_rcl2json()` and comes back mangled.
+
+The API credential is *not* `wazuh` — that is the indexer/dashboard user. Read
+the manager's own environment, which is authoritative over the compose file:
 
 ```bash
-TOKEN=$(curl -sk -u wazuh:<password> -X POST \
+docker exec "$MANAGER" printenv | grep -E 'API_USERNAME|API_PASSWORD'
+```
+
+The username on stock wazuh-docker is **`wazuh-wui`** — the password is
+whatever `API_PASSWORD` the command above prints. Export both, and keep the
+single quotes: the stock password contains `*` and would otherwise glob.
+
+```bash
+read -r WAZUH_USER WAZUH_PASS <<< "$(docker exec "$MANAGER" printenv \
+  | awk -F= '/^API_USERNAME=/{u=$2} /^API_PASSWORD=/{p=$2} END{print u, p}')"
+
+TOKEN=$(curl -sk -u "$WAZUH_USER:$WAZUH_PASS" -X POST \
   'https://localhost:55000/security/user/authenticate' | python3 -c 'import sys,json;print(json.load(sys.stdin)["data"]["token"])')
 
 curl -sk -H "Authorization: Bearer $TOKEN" \
@@ -57,7 +78,7 @@ curl -sk -H "Authorization: Bearer $TOKEN" \
 ## Install the rules
 
 ```bash
-docker cp ../../wazuh/local_rules.xml "$MANAGER":/var/ossec/etc/rules/local_rules.xml
+docker cp "$GUARDS/deploy/wazuh/local_rules.xml" "$MANAGER":/var/ossec/etc/rules/local_rules.xml
 docker exec "$MANAGER" /var/ossec/bin/wazuh-control restart
 ```
 
@@ -81,10 +102,10 @@ high-severity finding at index 1.
 ## Point the daemon at it
 
 ```bash
-cat > ~/.config/wazuh-guards/wazuh.env <<'EOF'
+cat > ~/.config/wazuh-guards/wazuh.env <<EOF
 WAZUH_API_URL=https://127.0.0.1:55000
-WAZUH_API_USER=wazuh
-WAZUH_API_PASSWORD=<password>
+WAZUH_API_USER=$WAZUH_USER
+WAZUH_API_PASSWORD=$WAZUH_PASS
 WAZUH_API_VERIFY_TLS=false
 EOF
 chmod 600 ~/.config/wazuh-guards/wazuh.env

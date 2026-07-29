@@ -20,3 +20,14 @@ patterns-cache.json
 .env
 wazuh.env
 deploy/docker/single-node/config/wazuh_indexer_ssl_certs/
+
+# Editor swap files
+*.swp
+*.swo
+*~
+
+# Local Claude Code settings (may contain credential strings from permissions)
+.claude/settings.local.json
+
+# Screenshot working folder - originals live in docs/img/
+images/

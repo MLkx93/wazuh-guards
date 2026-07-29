@@ -129,9 +129,7 @@
   -->
   <rule id="100220" level="10">
     <if_sid>100200</if_sid>
-    <field name="guardrail.pattern_sha">\.+</field>
-    <match>REPLACE_WITH_EXPECTED_SHA256</match>
-    <check_diff />
+    <field name="guardrail.pattern_sha" negate="yes">^805897763f5003ad7886469f074ed1e03abc7de02183a5d5f2825ef6fb8c0563$</field>
     <description>Guardrail: pattern drift on $(guardrail.host) - sha $(guardrail.pattern_sha) is not the published set</description>
     <group>guardrail_drift,</group>
   </rule>

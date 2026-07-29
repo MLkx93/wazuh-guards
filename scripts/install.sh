@@ -71,8 +71,12 @@ if [[ ! -f "$CONFIG_DIR/wazuh.env" ]]; then
 # Wazuh manager credentials. Optional: with these unset the guardrail runs on
 # bundled patterns and never contacts a manager.
 #
+# On stock wazuh-docker the API user is wazuh-wui, NOT wazuh -- wazuh is the
+# indexer/dashboard user and returns 401 against the API. Confirm with:
+#   docker exec <manager> printenv | grep -E 'API_USERNAME|API_PASSWORD'
+#
 # WAZUH_API_URL=https://127.0.0.1:55000
-# WAZUH_API_USER=wazuh
+# WAZUH_API_USER=wazuh-wui
 # WAZUH_API_PASSWORD=
 #
 # wazuh-docker ships a self-signed cert. Set this to false only after you have
