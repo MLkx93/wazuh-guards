@@ -1,0 +1,35 @@
+[Unit]
+Description=Claude Code secret/PII guardrail scan daemon
+Documentation=https://github.com/malakfz/wazuh-guards
+After=default.target
+
+[Service]
+Type=simple
+# %h expands to the user's home. INSTALL_DIR is rewritten by scripts/install.sh.
+ExecStart=%h/.local/share/wazuh-guards/venv/bin/python -m wazuh_guards.daemon
+Restart=on-failure
+RestartSec=5
+
+# Manager credentials live here, not in the repo. 0600, optional: an
+# unconfigured host runs on bundled patterns without error.
+EnvironmentFile=-%h/.config/wazuh-guards/wazuh.env
+
+# The daemon holds prompt text in memory and answers on a 0600 socket. These
+# bound what a compromise reaches without restricting what it legitimately
+# needs (a Unix socket, its cache/state dirs, and the spaCy model).
+#
+# Deliberately NOT set: ProtectKernelTunables, ProtectKernelModules,
+# ProtectControlGroups, ProtectHome. Those require capabilities a --user
+# service does not have; systemd fails the unit outright with
+# 218/CAPABILITIES rather than ignoring them. They belong in a system unit.
+NoNewPrivileges=true
+PrivateTmp=true
+RestrictSUIDSGID=true
+RestrictNamespaces=true
+LockPersonality=true
+
+# spaCy's pipeline is ~700MB resident. The cap is a runaway guard, not a target.
+MemoryMax=2G
+
+[Install]
+WantedBy=default.target

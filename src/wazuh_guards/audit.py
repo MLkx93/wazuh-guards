@@ -86,6 +86,7 @@ def build_event(
     mode: str = "",
     pattern_version: str = "",
     pattern_sha: str = "",
+    pattern_source: str = "",
     session_id: str = "",
     error: str = "",
     extra: dict | None = None,
@@ -103,6 +104,9 @@ def build_event(
         "cwd": os.environ.get("CLAUDE_PROJECT_DIR", ""),
         "pattern_version": pattern_version,
         "pattern_sha": pattern_sha,
+        # Rule 100221 alerts on "bundled": that host never reached the manager,
+        # so central pattern management is not actually in effect there.
+        "pattern_source": pattern_source,
     }
     event.update(_finding_fields(findings))
     if error:

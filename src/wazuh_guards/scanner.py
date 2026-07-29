@@ -185,6 +185,7 @@ def scan(text: str, use_presidio: bool = True, ruleset: Ruleset | None = None) -
         "presidio_error": _presidio_error,
         "pattern_version": rs.version,
         "pattern_sha": rs.sha256,
+        "pattern_source": rs.source,
     }
 
 

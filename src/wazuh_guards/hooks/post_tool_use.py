@@ -150,9 +150,12 @@ def main():
     if response is None:
         sys.exit(0)
 
+    rs = scanner.get_ruleset()
     audit_event(
         hook="PostToolUse", action="output_redacted", findings=findings,
         tool=tool_name, target=target,
+        session_id=payload.get("session_id", ""),
+        pattern_version=rs.version, pattern_sha=rs.sha256, pattern_source=rs.source,
     )
     print(json.dumps(response))
     sys.exit(0)

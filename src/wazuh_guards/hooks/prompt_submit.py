@@ -148,6 +148,7 @@ def main():
         session_id=payload.get("session_id", ""),
         pattern_version=result.get("pattern_version", ""),
         pattern_sha=result.get("pattern_sha", ""),
+        pattern_source=result.get("pattern_source", ""),
         extra={"prompt_chars": len(prompt)},
     )
 

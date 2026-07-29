@@ -211,6 +211,7 @@ def main():
         action="read_denied",
         tool=payload.get("tool_name", ""),
         target=target,
+        session_id=payload.get("session_id", ""),
         extra={"reason": reason[:256]},
     )
     print(json.dumps(build_response(reason)))

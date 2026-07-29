@@ -1,0 +1,20 @@
+<!--
+  Agent-side ingest for guardrail events.
+  Append inside <ossec_config> in /var/ossec/etc/ossec.conf on each monitored
+  host, then: systemctl restart wazuh-agent
+
+  The path must match WAZUH_GUARDS_LOG (default below). The agent runs as root
+  and tails the file; the guardrail writes it as the desktop user.
+
+  log_format json makes the decoder emit guardrail.action, guardrail.has_high
+  and the rest as first-class fields. Confirm with:
+      /var/ossec/bin/wazuh-logtest
+  then paste one line from guardrail.json -- every guardrail.* field should
+  appear as a SCALAR. If you see findings.0.rule instead, the event shape is
+  wrong, not the decoder.
+-->
+
+<localfile>
+  <log_format>json</log_format>
+  <location>/home/*/.local/state/wazuh-guards/guardrail.json</location>
+</localfile>
